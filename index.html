@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የብርብር ከተማ ቃለ ሕይወት ቤተክርስቲያን የማታ መጽሐፍ ቅዱስ ትምህርት ቤት</title>
+    <!-- SheetJS for Excel import/export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #1F4E78;
+            --secondary: #2E75B6;
+            --accent: #27AE60;
+            --danger: #C0392B;
+            --bg: #F4F7F9;
+            --card-bg: #FFFFFF;
+            --text: #2C3E50;
+            --border: #D1D5DB;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Noto Sans Ethiopic';
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #D9E1F2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .auth-status {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover { background-color: var(--primary); }
+        .btn-success { background-color: var(--accent); }
+        .btn-success:hover { background-color: #219150; }
+        .btn-danger { background-color: var(--danger); }
+        .btn-danger:hover { background-color: #A93226; }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media(max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        .tab-btn.active {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .table-responsive { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background-color: white;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) { background-color: #F8FAFC; }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .grade-pass { background-color: #D4EDDA; color: #155724; }
+        .grade-fail { background-color: #F8D7DA; color: #721C24; }
+
+        .action-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .container { max-width: 100%; margin: 0; padding: 0; }
+            .card { box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>የብርብር ከተማ ቃለ ሕይወት ቤተክርስቲያን የማታ መጽሐፍ ቅዱስ ትምህርት ቤት</h1>
+        <p>የ1ኛ፣ 2ኛ እና 3ኛ ዓመት የትምህርት መቆጣጠሪያና የውጤት ሲስተም</p>
+    </header>
+
+    <div class="container">
+        <!-- Top Auth Status -->
+        <div class="top-bar no-print">
+            <div class="auth-status" id="authStatusText">የገቡት፦ እንግዳ (ምንም አልገቡም)</div>
+            <div>
+                <button class="btn" id="loginBtn" onclick="showLoginModal()">ግባ (Login)</button>
+                <button class="btn btn-danger" id="logoutBtn" onclick="logout()" style="display:none;">ውጣ (Logout)</button>
+            </div>
+        </div>
+
+        <!-- Login Card -->
+        <div class="card no-print" id="loginCard" style="display:none;">
+            <h3>ወደ ሲስተሙ መግቢያ</h3>
+            <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">እባክዎን የሚገቡበትን የፍቃድ አይነት ይምረጡ፡</p>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>የመግቢያ አይነት</label>
+                    <select class="form-control" id="loginRole" onchange="toggleLoginInputs()">
+                        <option value="student">ተማሪ (Student)</option>
+                        <option value="teacher">መምህር (Teacher)</option>
+                        <option value="admin">ዋና መቆጣጠሪያ (Admin)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="usernameGroup">
+                    <label id="userLabel">የተማሪ መለያ (ID / Username)</label>
+                    <input type="text" class="form-control" id="loginUsername" placeholder="ምሳሌ፦ 201901">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>የምስጢር ቁጥር (Password)</label>
+                <input type="password" class="form-control" id="loginPassword" placeholder="ምስጢር ቁጥር ያስገቡ">
+            </div>
+            <button class="btn btn-success" onclick="processLogin()">ግባ</button>
+            <button class="btn btn-danger" onclick="hideLoginModal()">ሰርዝ</button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs no-print">
+            <button class="tab-btn active" onclick="switchTab('coursesTab')">የኮርስ ድልድል (1ኛ-3ኛ ዓመት)</button>
+            <button class="tab-btn" onclick="switchTab('studentsListTab')">የተማሪዎች ስም ዝርዝር</button>
+            <button class="tab-btn" onclick="switchTab('resultsTab')">የተማሪዎች ውጤት</button>
+            <button class="tab-btn" id="teacherTabBtn" onclick="switchTab('teacherTab')" style="display:none;">የመምህራን ውጤት ማስገቢያ</button>
+            <button class="tab-btn" id="adminTabBtn" onclick="switchTab('adminTab')" style="display:none;">የሲስተም መቆጣጠሪያ (Admin)</button>
+        </div>
+
+        <!-- TAB 1: Courses Schedule -->
+        <div class="tab-content active" id="coursesTab">
+            <div class="card">
+                <div class="action-bar no-print">
+                    <button class="btn btn-success" onclick="exportCoursesExcel()">የኮርስ ድልድልን በExcel አውርድ</button>
+                </div>
+
+                <div class="grid-3" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>ፕሮግራም ይምረጡ፦</label>
+                        <select class="form-control" id="courseFilterProgram" onchange="renderCourseTables()">
+                            <option value="degree">ዲግሪ ፕሮግራም</option>
+                            <option value="diploma">ዲፕሎማ ፕሮግራም</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ዓመት ይምረጡ፦</label>
+                        <select class="form-control" id="courseFilterYear" onchange="renderCourseTables()">
+                            <option value="1">1ኛ ዓመት</option>
+                            <option value="2">2ኛ ዓመት</option>
+                            <option value="3">3ኛ ዓመት</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ሴመስተር ይምረጡ፦</label>
+                        <select class="form-control" id="courseFilterSemester" onchange="renderCourseTables()">
+                            <option value="1">1ኛ ሴመስተር</option>
+                            <option value="2">2ኛ ሴመስተር</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h2 id="courseTableHeaderTitle">1ኛ ዓመት 1ኛ ሴመስተር የኮርስ ድልድል</h2>
+                <div class="table-responsive">
+                    <table id="dynamicCoursesTable">
+                        <thead>
+                            <tr>
+                                <th>ተ/ቁ</th>
+                                <th>ቀን</th>
+                                <th>ኮርስ</th>
+                                <th>መምህር</th>
+                                <th>ምርመራ</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Students List View -->
+        <div class="tab-content" id="studentsListTab">
+            <div class="card">
+                <h2>የተማሪዎች ሙሉ ስም ዝርዝር</h2>
+                <div style="margin-top: 15px; margin-bottom: 15px;">
+                    <label>ፕሮግራም ይምረጡ፦</label>
+                    <select class="form-control" id="studentListProgramSelect" style="max-width: 300px; display: inline-block;" onchange="renderStudentsListTable()">
+                        <option value="degree">የዲግሪ ተማሪዎች (35)</option>
+                        <option value="diploma">የዲፕሎማ ተማሪዎች (35)</option>
+                    </select>
+                </div>
+                <div class="table-responsive">
+                    <table id="studentsFullListTable">
+                        <thead>
+                            <tr>
+                                <th>ተ/ቁ</th>
+                                <th>መለያ ኮድ (ID No)</th>
+                                <th>የተማሪው ስም</th>
+                                <th>ጾታ</th>
+                                <th>ፕሮግራም</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Student Results View -->
+        <div class="tab-content" id="resultsTab">
+            <div class="card">
+                <h2>የተማሪዎች የትምህርት ውጤት ማየት እና ማውረድ</h2>
+                <div class="action-bar no-print" style="margin-top: 15px;">
+                    <div class="form-group" style="flex:1; min-width: 250px;">
+                        <label>ተማሪ ይምረጡ / የመለያ ቁጥር ያስገቡ፦</label>
+                        <select class="form-control" id="studentSelect" onchange="renderStudentResult()">
+                            <option value="">-- ተማሪ ይምረጡ --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ዓመት፦</label>
+                        <select class="form-control" id="resultFilterYear" onchange="renderStudentResult()">
+                            <option value="1">1ኛ ዓመት</option>
+                            <option value="2">2ኛ ዓመት</option>
+                            <option value="3">3ኛ ዓመት</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ሴመስተር፦</label>
+                        <select class="form-control" id="resultFilterSemester" onchange="renderStudentResult()">
+                            <option value="1">1ኛ ሴመስተር</option>
+                            <option value="2">2ኛ ሴመስተር</option>
+                        </select>
+                    </div>
+                    <div style="align-self: flex-end;">
+                        <button class="btn btn-success" onclick="window.print()">ውጤት አትም / PDF አውርድ</button>
+                    </div>
+                </div>
+
+                <div id="studentResultCard" style="display:none; margin-top: 20px;">
+                    <div style="text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3>የብርብር ከተማ ቃለ ሕይወት ቤተክርስቲያን የማታ መጽሐፍ ቅዱስ ትምህርት ቤት</h3>
+                        <h4>የተማሪ የትምህርት ውጤት መግለጫ (Grade Sheet)</h4>
+                    </div>
+                    <div class="grid-2" style="margin-bottom: 15px;">
+                        <div>
+                            <p><strong>የተማሪ ስም፦</strong> <span id="resName"></span></p>
+                            <p><strong>የተማሪ መለያ ID፦</strong> <span id="resId"></span></p>
+                        </div>
+                        <div>
+                            <p><strong>የትምህርት ደረጃ፦</strong> <span id="resProgram"></span></p>
+                            <p><strong>የትምህርት ክፍለ ጊዜ፦</strong> <span id="resYearSem"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="studentResultTable">
+                            <thead>
+                                <tr>
+                                    <th>ተ/ቁ</th>
+                                    <th>ኮርስ name</th>
+                                    <th>ውጤት (100%)</th>
+                                    <th>የፊደል ደረጃ (Grade)</th>
+                                    <th>የነጥብ እሴት (Grade Point)</th>
+                                    <th>ሁኔታ</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; font-weight: bold; font-size: 1.1rem; background: #EBF5FB; padding: 15px; border-radius: 5px;">
+                        <p>አማካይ ነጥብ (GPA)፦ <span id="resGPA">0.00</span></p>
+                        <p>አጠቃላይ ውጤት፦ <span id="resStatus">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Teacher Grade Entry -->
+        <div class="tab-content" id="teacherTab">
+            <div class="card">
+                <h2>የመምህራን የውጤት ማስገቢያ ገጽ</h2>
+                <p style="color: #666; margin-bottom: 15px;">የሚያስተምሩትን ኮርስ በመምረጥ የተማሪዎችን ውጤት ማስገባት፣ ማረም ወይም ከExcel ፋይል መጫን ይችላሉ።</p>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>የሚያስተምሩት ኮርስ፦</label>
+                        <select class="form-control" id="teacherCourseSelect" onchange="loadTeacherStudents()">
+                            <option value="">-- ኮርስ ይምረጡ --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ከExcel ውጤት መጫኛ (Import)፦</label>
+                        <input type="file" class="form-control" id="excelImportFile" accept=".xlsx, .xls" onchange="importGradeExcel(event)">
+                    </div>
+                </div>
+
+                <div class="action-bar no-print">
+                    <button class="btn btn-success" onclick="saveTeacherGrades()">ውጤቶችን መዝግብ (Save)</button>
+                    <button class="btn" onclick="exportTeacherGradeTemplate()">የውጤት መሙያ Excel አውርድ</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="teacherGradeTable">
+                        <thead>
+                            <tr>
+                                <th>ተ/ቁ</th>
+                                <th>የተማሪ ID</th>
+                                <th>የተማሪ ስም</th>
+                                <th>ፕሮግራም</th>
+                                <th>ውጤት (ከ 100%)</th>
+                                <th>የፊደል ደረጃ</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: Admin Panel -->
+        <div class="tab-content" id="adminTab">
+            <div class="card">
+                <h2>የሲስተም መቆጣጠሪያ (Admin Panel)</h2>
+
+                <!-- Password Management Section -->
+                <div style="margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+                    <h3>1. የመግቢያ ምስጢር ቁጥሮች ማስተካከያ (Manage Passwords)</h3>
+                    <div class="grid-2" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>የተጠቃሚ አይነት ይምረጡ፦</label>
+                            <select class="form-control" id="adminUserType" onchange="populateAdminUserDropdown()">
+                                <option value="admin">ዋና አድሚን (Admin)</option>
+                                <option value="teacher">መምህራን (Teachers)</option>
+                                <option value="student">ተማሪዎች (Students)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="adminTargetUserGroup" style="display:none;">
+                            <label>ተጠቃሚ ይምረጡ፦</label>
+                            <select class="form-control" id="adminTargetUser"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>አዲስ ምስጢር ቁጥር (New Password)፦</label>
+                        <input type="text" class="form-control" id="adminNewPassword" placeholder="አዲስ ምስጢር ቁጥር ያስገቡ">
+                    </div>
+                    <button class="btn btn-success" onclick="updatePasswordByAdmin()">ምስጢር ቁጥር ቀይር</button>
+                </div>
+
+                <!-- Add New Course Section -->
+                <div style="margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+                    <h3>2. አዲስ ኮርስ እና መምህር መጨመር</h3>
+                    <div class="grid-3" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>ፕሮግራም፦</label>
+                            <select class="form-control" id="addCourseProgram">
+                                <option value="degree">ዲግሪ</option>
+                                <option value="diploma">ዲፕሎማ</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ዓመት፦</label>
+                            <select class="form-control" id="addCourseYear">
+                                <option value="1">1ኛ ዓመት</option>
+                                <option value="2">2ኛ ዓመት</option>
+                                <option value="3">3ኛ ዓመት</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ሴመስተር፦</label>
+                            <select class="form-control" id="addCourseSemester">
+                                <option value="1">1ኛ ሴመስተር</option>
+                                <option value="2">2ኛ ሴመስተር</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>የኮርስ ስም፦</label>
+                            <input type="text" class="form-control" id="addCourseName" placeholder="ምሳሌ፦ ሥነ-መለኮት 2">
+                        </div>
+                        <div class="form-group">
+                            <label>የሚሰጥበት ቀን፦</label>
+                            <input type="text" class="form-control" id="addCourseDate" placeholder="ምሳሌ፦ የካ 1 – 15/2019">
+                        </div>
+                        <div class="form-group">
+                            <label>መምህር፦</label>
+                            <input type="text" class="form-control" id="addCourseTeacher" placeholder="ምሳሌ፦ መ/ር አበበ ኪሮስ">
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="addNewCourse()">አዲስ ኮርስ መዝግብ</button>
+                </div>
+
+                <!-- Add Teacher Section -->
+                <div style="margin-top: 20px;">
+                    <h3>3. አዲስ መምህር መጨመር</h3>
+                    <div class="grid-2" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>የመምህር ሙሉ ስም፦</label>
+                            <input type="text" class="form-control" id="addTeacherName" placeholder="ምሳሌ፦ መ/ር ካሳሁን">
+                        </div>
+                        <div class="form-group">
+                            <label>የመግቢያ ምስጢር ቁጥር፦</label>
+                            <input type="text" class="form-control" id="addTeacherPassword" value="123456">
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="addNewTeacher()">አዲስ መምህር መዝግብ</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Default 1st Year 1st Semester Degree Courses
+        const defaultDegreeCourses = [
+            { id: 101, year: 1, semester: 1, date: "መስ 11 – 25/2019", name: "ሥነ-አፈታት", teacher: "መ/ር ሰሎሞን ሶርሳ" },
+            { id: 102, year: 1, semester: 1, date: "መስ 26 – ጥቅ 9/2019", name: "እግዚ/ርና መጽ/ቅዱስ", teacher: "ፓ/ር መስፍን ሞላ" },
+            { id: 103, year: 1, semester: 1, date: "ጥቅ 10 – 23/2019", name: "አጠናን ዘዴ", teacher: "መ/ር ሕዝቅኤል ባካሎ" },
+            { id: 104, year: 1, semester: 1, date: "ጥቅ 24 – ህዳ 7/2019", name: "ብሉይ ኪዳን 1", teacher: "መ/ር አሸናፊ ሆጋጎ" },
+            { id: 105, year: 1, semester: 1, date: "ህዳ 8 – 21/2019", name: "አዲስ ኪዳን 1", teacher: "መ/ር ታዴዎስ ሚልክያስ" },
+            { id: 106, year: 1, semester: 1, date: "ህዳ 22 – ታህሳ 5/2019", name: "አማርኛ ሰዋሰው", teacher: "ያልተመደበ" },
+            { id: 107, year: 1, semester: 1, date: "ታህሳ 6 – 19/2019", name: "ፍልስፍናና ሥነ-መለኮት", teacher: "መ/ር ሰሎሞን ሶርሳ" },
+            { id: 108, year: 1, semester: 1, date: "ጥር 3 – 17/2019", name: "የአዲስ ኪዳን ሥነ-መለኮት", teacher: "መ/ር ታዴዎስ ሚልክያስ" }
+        ];
+
+        // Default 1st Year 1st Semester Diploma Courses
+        const defaultDiplomaCourses = [
+            { id: 201, year: 1, semester: 1, date: "መስ 11 – 25/2019", name: "እግዚ/ርና መጽ/ቅዱስ", teacher: "መ/ር አስራት አማኑኤል" },
+            { id: 202, year: 1, semester: 1, date: "መስ 26 – ጥቅ 9/2019", name: "አጠናን ዘዴ", teacher: "መ/ር ሕዝቅኤል ባካሎ" },
+            { id: 203, year: 1, semester: 1, date: "ጥቅ 10 – 23/2019", name: "ሥነ-አፈታት", teacher: "መ/ር አየለ አንጁሎ" },
+            { id: 204, year: 1, semester: 1, date: "ጥቅ 24 – ህዳ 7/2019", name: "ሥነ-ምግባር", teacher: "መ/ር ገላቲያ ድስታ" },
+            { id: 205, year: 1, semester: 1, date: "ህዳ 8 – 21/2019", name: "ብሉይ ኪዳን 1", teacher: "ፓ/ር መስፍን ሞላ" },
+            { id: 206, year: 1, semester: 1, date: "ህዳ 22 – ታህሳ 5/2019", name: "አዲስ ኪዳን 1", teacher: "መ/ር ታዴዎስ ሚልክያስ" },
+            { id: 207, year: 1, semester: 1, date: "ታህሳ 6 – 19/2019", name: "መንፈስ ቅዱስና መናፍስት", teacher: "ፓ/ር ጉጃ ኡባ" },
+            { id: 208, year: 1, semester: 1, date: "ጥር 3 – 17/2019", name: "ክርስቶስና ደህንነት", teacher: "መ/ር ታዴዎስ ሚልክያስ" }
+        ];
+
+        // 35 Degree Students
+        const defaultDegreeStudents = [
+            { id: "201901", name: "ሕዝቅኤል ፁንቃ", gender: "ወ", program: "degree" },
+            { id: "201902", name: "መሐመድ ሀርቶ", gender: "ወ", program: "degree" },
+            { id: "201903", name: "መሰረት ማቴዎስ", gender: "ሴ", program: "degree" },
+            { id: "201904", name: "መንግሥቱ ፎላ", gender: "ወ", program: "degree" },
+            { id: "201905", name: "ማቱሳላ ጴጥሮስ", gender: "ወ", program: "degree" },
+            { id: "201906", name: "ማቴዎስ መስቀሌ", gender: "ወ", program: "degree" },
+            { id: "201907", name: "ማቴዎስ ጁታ", gender: "ወ", program: "degree" },
+            { id: "201908", name: "ሚኖታ ደባልቄ", gender: "ወ", program: "degree" },
+            { id: "201909", name: "ምህረት ሚልክያስ", gender: "ሴ", program: "degree" },
+            { id: "201910", name: "ሳሙኤል ኬቶ", gender: "ወ", program: "degree" },
+            { id: "201911", name: "ሳምሶን አብራሃም", gender: "ወ", program: "degree" },
+            { id: "201912", name: "ሸሪፎ ሻራ", gender: "ወ", program: "degree" },
+            { id: "201913", name: "በረከት ፎላ", gender: "ወ", program: "degree" },
+            { id: "201914", name: "በርገነ ባፋ", gender: "ወ", program: "degree" },
+            { id: "201915", name: "ተመስገን መንግሥቱ", gender: "ወ", program: "degree" },
+            { id: "201916", name: "ታምራት በቀሌ", gender: "ወ", program: "degree" },
+            { id: "201917", name: "ኃይልዬ አድሱ", gender: "ወ", program: "degree" },
+            { id: "201918", name: "አለሙ ሌራ", gender: "ወ", program: "degree" },
+            { id: "201919", name: "አለሙ አራ", gender: "ሴ", program: "degree" },
+            { id: "201920", name: "አልማዝ አስራት", gender: "ሴ", program: "degree" },
+            { id: "201921", name: "አማኑኤል ደቤና", gender: "ሴ", program: "degree" },
+            { id: "201922", name: "አሰገደች አየለ", gender: "ሴ", program: "degree" },
+            { id: "201923", name: "አሸብር ከበደ", gender: "ወ", program: "degree" },
+            { id: "201924", name: "አበበች ለራንሶ", gender: "ሴ", program: "degree" },
+            { id: "201925", name: "አይናለም ማንጁራ", gender: "ሴ", program: "degree" },
+            { id: "201926", name: "አንዱዓለም ሉቃስ", gender: "ወ", program: "degree" },
+            { id: "201927", name: "አንድነት ለማ", gender: "ወ", program: "degree" },
+            { id: "201928", name: "አኬና አዴቶ", gender: "ወ", program: "degree" },
+            { id: "201929", name: "ኢተነሽ በሩ", gender: "ሴ", program: "degree" },
+            { id: "201930", name: "ደስታ ጉጋላ", gender: "ወ", program: "degree" },
+            { id: "201931", name: "ጩቃሎ ጩቱሎ", gender: "ወ", program: "degree" },
+            { id: "201932", name: "ጴጥሮስ ገዘኽኝ", gender: "ወ", program: "degree" },
+            { id: "201933", name: "ፈቃደ ብርሃኑ", gender: "ወ", program: "degree" },
+            { id: "201934", name: "አቤል ጴጥሮስ", gender: "ወ", program: "degree" },
+            { id: "201935", name: "ትክክሏ ሴባ", gender: "ሴ", program: "degree" }
+        ];
+
+        // 35 Diploma Students
+        const defaultDiplomaStudents = [
+            { id: "201901", name: "ሊዲያ ጳዉሎስ", gender: "ሴ", program: "diploma" },
+            { id: "201902", name: "መሐመድ ቶማ", gender: "ወ", program: "diploma" },
+            { id: "201903", name: "መስከረም ዳዊት", gender: "ሴ", program: "diploma" },
+            { id: "201904", name: "መብራት ደምሴ", gender: "ሴ", program: "diploma" },
+            { id: "201811", name: "ሙሉቀን ዘለቀ ፋልታሞ", gender: "ወ", program: "diploma" },
+            { id: "201806", name: "ማርቆስ ቱማ", gender: "ወ", program: "diploma" },
+            { id: "201905", name: "ማቴዎስ መስቀሌ", gender: "ወ", program: "diploma" },
+            { id: "201906", name: "ማገኝ ማጮ", gender: "ወ", program: "diploma" },
+            { id: "201907", name: "ምስራቅ ኩኬ", gender: "ሴ", program: "diploma" },
+            { id: "201908", name: "ሠራዊት ሳሙኤል", gender: "ሴ", program: "diploma" },
+            { id: "201909", name: "ስንቅነሽ ሴታ", gender: "ሴ", program: "diploma" },
+            { id: "201803", name: "ስንታየሁ ቱማቶ", gender: "ወ", program: "diploma" },
+            { id: "201910", name: "ቤተል መሸሻ", gender: "ሴ", program: "diploma" },
+            { id: "201911", name: "ቤተል ሳሙኤል", gender: "ሴ", program: "diploma" },
+            { id: "201912", name: "ቤዛነህ ማቴዎስ", gender: "ወ", program: "diploma" },
+            { id: "201913", name: "ብንያም ሕዝቅኤል", gender: "ወ", program: "diploma" },
+            { id: "201914", name: "ተረፈች ተስፋዬ", gender: "ሴ", program: "diploma" },
+            { id: "201915", name: "ተመስገን መርድነህ", gender: "ወ", program: "diploma" },
+            { id: "201916", name: "ቸርነት ገዛኸኝ", gender: "ወ", program: "diploma" },
+            { id: "201917", name: "አልማዝ አበራ", gender: "ሴ", program: "diploma" },
+            { id: "201918", name: "አመነች ነዉሌ", gender: "ሴ", program: "diploma" },
+            { id: "201802", name: "አማኑኤል ባሳ", gender: "ወ", program: "diploma" },
+            { id: "201807", name: "አስራት ኤልያስ", gender: "ወ", program: "diploma" },
+            { id: "201801", name: "አስራት ዳንኤል", gender: "ወ", program: "diploma" },
+            { id: "201919", name: "አበራ አለቆ", gender: "ወ", program: "diploma" },
+            { id: "201920", name: "አበባየሁ አየለ", gender: "ሴ", program: "diploma" },
+            { id: "201921", name: "አብራሃም ዱቃ", gender: "ወ", program: "diploma" },
+            { id: "201805", name: "ከፍያለዉ ካስትሮ", gender: "ወ", program: "diploma" },
+            { id: "201922", name: "ዘላለም ማዴቦ", gender: "ሴ", program: "diploma" },
+            { id: "201923", name: "ደነቀ አለማየሁ", gender: "ወ", program: "diploma" },
+            { id: "201808", name: "ጠቅላዩ ፎላ", gender: "ወ", program: "diploma" },
+            { id: "201804", name: "ጥሩነሽ መሐመድ", gender: "ሴ", program: "diploma" },
+            { id: "201924", name: "አማኑኤል አዴማ", gender: "ወ", program: "diploma" },
+            { id: "201925", name: "ከፍያለዉ ከማል", gender: "ወ", program: "diploma" },
+            { id: "201926", name: "አበራሽ አዳዬ", gender: "ሴ", program: "diploma" }
+        ];
+
+        // System State
+        let degreeCourses = JSON.parse(localStorage.getItem('degreeCourses')) || defaultDegreeCourses;
+        let diplomaCourses = JSON.parse(localStorage.getItem('diplomaCourses')) || defaultDiplomaCourses;
+        
+        let storedStudents = JSON.parse(localStorage.getItem('students'));
+        let students = (storedStudents && storedStudents.length >= 70 && storedStudents[0].name.indexOf('ተማሪ') === -1) 
+            ? storedStudents 
+            : [...defaultDegreeStudents, ...defaultDiplomaStudents];
+            
+        localStorage.setItem('students', JSON.stringify(students));
+
+        let passwords = JSON.parse(localStorage.getItem('passwords')) || {
+            admin: 'admin123',
+            teachers: {
+                "መ/ር ሰሎሞን ሶርሳ": "123456",
+                "ፓ/ር መስፍን ሞላ": "123456",
+                "መ/ር ሕዝቅኤል ባካሎ": "123456",
+                "መ/ር አሸናፊ ሆጋጎ": "123456",
+                "መ/ር ታዴዎስ ሚልክያስ": "123456",
+                "መ/ር አስራት አማኑኤል": "123456",
+                "መ/ር አየለ አንጁሎ": "123456",
+                "መ/ር ገላቲያ ድስታ": "123456",
+                "ፓ/ር ጉጃ ኡባ": "123456"
+            },
+            students: {}
+        };
+
+        students.forEach(s => {
+            let key = `${s.program}_${s.id}`;
+            if (!passwords.students[key]) {
+                passwords.students[key] = '123456';
+            }
+        });
+        localStorage.setItem('passwords', JSON.stringify(passwords));
+
+        let grades = JSON.parse(localStorage.getItem('grades')) || {}; 
+        let currentUser = null;
+
+        window.onload = function() {
+            renderCourseTables();
+            renderStudentsListTable();
+            populateStudentDropdown();
+            populateAdminUserDropdown();
+        };
+
+        function renderCourseTables() {
+            const program = document.getElementById('courseFilterProgram').value;
+            const year = Number(document.getElementById('courseFilterYear').value);
+            const sem = Number(document.getElementById('courseFilterSemester').value);
+
+            const progText = program === 'degree' ? 'የዲግሪ ፕሮግራም' : 'የዲፕሎማ ፕሮግራም';
+            document.getElementById('courseTableHeaderTitle').innerText = `${progText} - ${year}ኛ ዓመት ${sem}ኛ ሴመስተር የኮርስ ድልድል`;
+
+            const courseList = program === 'degree' ? degreeCourses : diplomaCourses;
+            const filtered = courseList.filter(c => (c.year || 1) == year && (c.semester || 1) == sem);
+
+            const tbody = document.querySelector('#dynamicCoursesTable tbody');
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">ለዚህ ዓመትና ሴመስተር የተመዘገበ ኮርስ የለም። በአድሚን ገጽ ማከል ይችላሉ።</td></tr>';
+            } else {
+                filtered.forEach((c, index) => {
+                    tbody.innerHTML += `<tr>
+                        <td>${index + 1}</td>
+                        <td>${c.date}</td>
+                        <td><strong>${c.name}</strong></td>
+                        <td>${c.teacher}</td>
+                        <td></td>
+                    </tr>`;
+                });
+            }
+        }
+
+        function renderStudentsListTable() {
+            const selectedProgram = document.getElementById('studentListProgramSelect').value;
+            const tbody = document.querySelector('#studentsFullListTable tbody');
+            tbody.innerHTML = '';
+
+            const filtered = students.filter(s => s.program === selectedProgram);
+            filtered.forEach((s, idx) => {
+                tbody.innerHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td><strong>${s.id}</strong></td>
+                    <td>${s.name}</td>
+                    <td>${s.gender}</td>
+                    <td>${s.program === 'degree' ? 'ዲግሪ' : 'ዲፕሎማ'}</td>
+                </tr>`;
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginCard').style.display = 'block';
+        }
+
+        function hideLoginModal() {
+            document.getElementById('loginCard').style.display = 'none';
+        }
+
+        function toggleLoginInputs() {
+            const role = document.getElementById('loginRole').value;
+            const userGroup = document.getElementById('usernameGroup');
+            const userLabel = document.getElementById('userLabel');
+
+            if (role === 'admin') {
+                userGroup.style.display = 'none';
+            } else if (role === 'teacher') {
+                userGroup.style.display = 'block';
+                userLabel.innerText = 'የመምህር ስም (Teacher Name)';
+            } else {
+                userGroup.style.display = 'block';
+                userLabel.innerText = 'የተማሪ መለያ (Student ID)';
+            }
+        }
+
+        function processLogin() {
+            const role = document.getElementById('loginRole').value;
+            const userVal = document.getElementById('loginUsername').value.trim();
+            const passVal = document.getElementById('loginPassword').value.trim();
+
+            if (role === 'admin') {
+                if (passVal === passwords.admin) {
+                    currentUser = { role: 'admin', name: 'ዋና መቆጣጠሪያ (Admin)' };
+                } else {
+                    alert('የተሳሳተ የአድሚን ምስጢር ቁጥር!');
+                    return;
+                }
+            } else if (role === 'teacher') {
+                if (passwords.teachers[userVal] && passwords.teachers[userVal] === passVal) {
+                    currentUser = { role: 'teacher', name: userVal };
+                } else {
+                    alert('የተሳሳተ የመምህር ስም ወይም ምስጢር ቁጥር!');
+                    return;
+                }
+            } else if (role === 'student') {
+                const stud = students.find(s => s.id === userVal && (passwords.students[`${s.program}_${s.id}`] === passVal || passVal === '123456'));
+                if (stud) {
+                    currentUser = { role: 'student', id: stud.id, program: stud.program, name: stud.name };
+                } else {
+                    alert('የተሳሳተ የተማሪ ID ወይም ምስጢር ቁጥር!');
+                    return;
+                }
+            }
+
+            document.getElementById('authStatusText').innerText = `የገቡት፦ ${currentUser.name} (${role.toUpperCase()})`;
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+            hideLoginModal();
+
+            if (role === 'admin') {
+                document.getElementById('adminTabBtn').style.display = 'inline-block';
+                document.getElementById('teacherTabBtn').style.display = 'inline-block';
+                populateTeacherCourseDropdown();
+            } else if (role === 'teacher') {
+                document.getElementById('adminTabBtn').style.display = 'none';
+                document.getElementById('teacherTabBtn').style.display = 'inline-block';
+                populateTeacherCourseDropdown();
+            } else if (role === 'student') {
+                document.getElementById('adminTabBtn').style.display = 'none';
+                document.getElementById('teacherTabBtn').style.display = 'none';
+                switchTab('resultsTab');
+                document.getElementById('studentSelect').value = `${currentUser.program}_${currentUser.id}`;
+                renderStudentResult();
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('authStatusText').innerText = 'የገቡት፦ እንግዳ (ምንም አልገቡም)';
+            document.getElementById('loginBtn').style.display = 'inline-block';
+            document.getElementById('logoutBtn').style.display = 'none';
+            document.getElementById('adminTabBtn').style.display = 'none';
+            document.getElementById('teacherTabBtn').style.display = 'none';
+            switchTab('coursesTab');
+        }
+
+        function populateStudentDropdown() {
+            const select = document.getElementById('studentSelect');
+            select.innerHTML = '<option value="">-- ተማሪ ይምረጡ --</option>';
+            students.forEach(s => {
+                select.innerHTML += `<option value="${s.program}_${s.id}">${s.id} - ${s.name} (${s.program === 'degree' ? 'ዲግሪ' : 'ዲፕሎማ'})</option>`;
+            });
+        }
+
+        function calculateGradePoint(mark) {
+            if (mark >= 93) return { grade: 'A', point: 4.0 };
+            if (mark >= 90) return { grade: 'A-', point: 3.66 };
+            if (mark >= 87) return { grade: 'B+', point: 3.66 };
+            if (mark >= 83) return { grade: 'B', point: 3.33 };
+            if (mark >= 80) return { grade: 'B-', point: 3.00 };
+            if (mark >= 77) return { grade: 'C+', point: 2.66 };
+            if (mark >= 73) return { grade: 'C', point: 2.33 };
+            if (mark >= 70) return { grade: 'C-', point: 2.00 };
+            if (mark >= 67) return { grade: 'D+', point: 1.66 };
+            if (mark >= 63) return { grade: 'D', point: 1.33 };
+            if (mark >= 60) return { grade: 'D-', point: 1.00 };
+            return { grade: 'F', point: 0.00 };
+        }
+
+        function renderStudentResult() {
+            const val = document.getElementById('studentSelect').value;
+            const year = Number(document.getElementById('resultFilterYear').value);
+            const sem = Number(document.getElementById('resultFilterSemester').value);
+
+            if (!val) {
+                document.getElementById('studentResultCard').style.display = 'none';
+                return;
+            }
+
+            const [program, id] = val.split('_');
+            const student = students.find(s => s.id === id && s.program === program);
+            if (!student) return;
+
+            document.getElementById('resName').innerText = student.name;
+            document.getElementById('resId').innerText = student.id;
+            document.getElementById('resProgram').innerText = student.program === 'degree' ? 'ዲግሪ ፕሮግራም' : 'ዲፕሎማ ፕሮግራም';
+            document.getElementById('resYearSem').innerText = `${year}ኛ ዓመት | ${sem}ኛ ሴመስተር`;
+
+            const allCourses = student.program === 'degree' ? degreeCourses : diplomaCourses;
+            const courses = allCourses.filter(c => (c.year || 1) == year && (c.semester || 1) == sem);
+
+            const tbody = document.querySelector('#studentResultTable tbody');
+            tbody.innerHTML = '';
+
+            let totalPoints = 0;
+            let count = 0;
+            let hasFail = false;
+
+            if (courses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">ለዚህ ክፍለ ጊዜ የተመዘገበ ኮርስ የለም።</td></tr>';
+            } else {
+                courses.forEach((c, idx) => {
+                    let markKey = `${student.program}_${student.id}_${c.id}`;
+                    let mark = grades[markKey];
+                    let markStr = mark !== undefined ? mark : 'ያልተመዘገበ';
+                    let gradeInfo = mark !== undefined ? calculateGradePoint(Number(mark)) : { grade: '-', point: 0 };
+
+                    if (mark !== undefined) {
+                        totalPoints += gradeInfo.point;
+                        count++;
+                        if (mark < 60) hasFail = true;
+                    }
+
+                    tbody.innerHTML += `<tr>
+                        <td>${idx + 1}</td>
+                        <td>${c.name}</td>
+                        <td>${markStr}</td>
+                        <td><strong>${gradeInfo.grade}</strong></td>
+                        <td>${gradeInfo.point > 0 ? gradeInfo.point : '-'}</td>
+                        <td>${mark === undefined ? '-' : (mark >= 60 ? '<span class="grade-badge grade-pass">አልፏል</span>' : '<span class="grade-badge grade-fail">ወድቋል</span>')}</td>
+                    </tr>`;
+                });
+            }
+
+            let gpa = count > 0 ? (totalPoints / count).toFixed(2) : '0.00';
+            document.getElementById('resGPA').innerText = gpa;
+            document.getElementById('resStatus').innerText = count === 0 ? 'ውጤት አልተሞላም' : (hasFail ? 'አልተጠናቀቀም / የወደቀበት ኮርስ አለ' : 'በስኬት አጠናቋል (PASSED)');
+
+            document.getElementById('studentResultCard').style.display = 'block';
+        }
+
+        function populateTeacherCourseDropdown() {
+            const select = document.getElementById('teacherCourseSelect');
+            select.innerHTML = '<option value="">-- ኮርስ ይምረጡ --</option>';
+
+            let allCourses = [
+                ...degreeCourses.map(c => ({ ...c, program: 'degree' })),
+                ...diplomaCourses.map(c => ({ ...c, program: 'diploma' }))
+            ];
+
+            if (currentUser && currentUser.role === 'teacher') {
+                allCourses = allCourses.filter(c => c.teacher === currentUser.name);
+            }
+
+            allCourses.forEach(c => {
+                select.innerHTML += `<option value="${c.program}_${c.id}">${c.name} (${c.program === 'degree' ? 'ዲግሪ' : 'ዲፕሎማ'} - ${c.year || 1}ኛ ዓ/ ${c.semester || 1}ኛ ሴ) - ${c.teacher}</option>`;
+            });
+        }
+
+        function loadTeacherStudents() {
+            const val = document.getElementById('teacherCourseSelect').value;
+            if (!val) return;
+
+            const [program, courseId] = val.split('_');
+            let eligibleStudents = students.filter(s => s.program === program);
+            const tbody = document.querySelector('#teacherGradeTable tbody');
+            tbody.innerHTML = '';
+
+            eligibleStudents.forEach((s, idx) => {
+                let markKey = `${program}_${s.id}_${courseId}`;
+                let currentMark = grades[markKey] !== undefined ? grades[markKey] : '';
+
+                tbody.innerHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td>${s.id}</td>
+                    <td>${s.name}</td>
+                    <td>${program === 'degree' ? 'ዲግሪ' : 'ዲፕሎማ'}</td>
+                    <td><input type="number" min="0" max="100" class="form-control mark-input" data-student-id="${s.id}" data-program="${program}" value="${currentMark}" onchange="updateRowGrade(this)"></td>
+                    <td class="row-grade">${currentMark !== '' ? calculateGradePoint(Number(currentMark)).grade : '-'}</td>
+                </tr>`;
+            });
+        }
+
+        function updateRowGrade(input) {
+            let val = Number(input.value);
+            let cell = input.parentElement.parentElement.querySelector('.row-grade');
+            if (input.value !== '' && !isNaN(val)) {
+                cell.innerText = calculateGradePoint(val).grade;
+            } else {
+                cell.innerText = '-';
+            }
+        }
+
+        function saveTeacherGrades() {
+            const val = document.getElementById('teacherCourseSelect').value;
+            if (!val) {
+                alert('እባክዎን መጀመሪያ ኮርስ ይምረጡ!');
+                return;
+            }
+
+            const [program, courseId] = val.split('_');
+            const inputs = document.querySelectorAll('.mark-input');
+            inputs.forEach(input => {
+                let studId = input.getAttribute('data-student-id');
+                let markVal = input.value;
+                let markKey = `${program}_${studId}_${courseId}`;
+
+                if (markVal !== '') {
+                    grades[markKey] = Number(markVal);
+                }
+            });
+
+            localStorage.setItem('grades', JSON.stringify(grades));
+            alert('ውጤቶች በስኬት ተመዝግበዋል!');
+        }
+
+        function exportCoursesExcel() {
+            const wb = XLSX.utils.book_new();
+            const degWS = XLSX.utils.json_to_sheet(degreeCourses);
+            const dipWS = XLSX.utils.json_to_sheet(diplomaCourses);
+
+            XLSX.utils.book_append_sheet(wb, degWS, "የዲግሪ ኮርሶች");
+            XLSX.utils.book_append_sheet(wb, dipWS, "የዲፕሎማ ኮርሶች");
+
+            XLSX.writeFile(wb, "የኮርስ_ድልድል.xlsx");
+        }
+
+        function exportTeacherGradeTemplate() {
+            const val = document.getElementById('teacherCourseSelect').value;
+            if (!val) {
+                alert('እባክዎን መጀመሪያ ኮርስ ይምረጡ!');
+                return;
+            }
+
+            const [program, courseId] = val.split('_');
+            let eligibleStudents = students.filter(s => s.program === program);
+
+            let exportData = eligibleStudents.map(s => ({
+                'የተማሪ ID': s.id,
+                'የተማሪ ስም': s.name,
+                'ውጤት (100%)': grades[`${program}_${s.id}_${courseId}`] || ''
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "የውጤት መሙያ");
+            XLSX.writeFile(wb, `Grade_Sheet_${program}_Course_${courseId}.xlsx`);
+        }
+
+        function importGradeExcel(event) {
+            const file = event.target.files[0];
+            const val = document.getElementById('teacherCourseSelect').value;
+
+            if (!val) {
+                alert('እባክዎን መጀመሪያ ኮርስ ይምረጡ!');
+                return;
+            }
+
+            const [program, courseId] = val.split('_');
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet);
+
+                json.forEach(row => {
+                    let id = row['የተማሪ ID'];
+                    let mark = row['ውጤት (100%)'];
+                    if (id && mark !== undefined && mark !== '') {
+                        grades[`${program}_${id}_${courseId}`] = Number(mark);
+                    }
+                });
+
+                localStorage.setItem('grades', JSON.stringify(grades));
+                alert('ውጤቶች ከExcel በስኬት ተጭነዋል!');
+                loadTeacherStudents();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function populateAdminUserDropdown() {
+            const type = document.getElementById('adminUserType').value;
+            const targetGroup = document.getElementById('adminTargetUserGroup');
+            const targetSelect = document.getElementById('adminTargetUser');
+
+            if (type === 'admin') {
+                targetGroup.style.display = 'none';
+            } else if (type === 'teacher') {
+                targetGroup.style.display = 'block';
+                targetSelect.innerHTML = '';
+                Object.keys(passwords.teachers).forEach(t => {
+                    targetSelect.innerHTML += `<option value="${t}">${t}</option>`;
+                });
+            } else if (type === 'student') {
+                targetGroup.style.display = 'block';
+                targetSelect.innerHTML = '';
+                students.forEach(s => {
+                    targetSelect.innerHTML += `<option value="${s.program}_${s.id}">${s.id} - ${s.name} (${s.program === 'degree' ? 'ዲግሪ' : 'ዲፕሎማ'})</option>`;
+                });
+            }
+        }
+
+        function updatePasswordByAdmin() {
+            const type = document.getElementById('adminUserType').value;
+            const newPass = document.getElementById('adminNewPassword').value.trim();
+
+            if (!newPass) {
+                alert('እባክዎን አዲስ ምስጢር ቁጥር ያስገቡ!');
+                return;
+            }
+
+            if (type === 'admin') {
+                passwords.admin = newPass;
+            } else if (type === 'teacher') {
+                const teacherName = document.getElementById('adminTargetUser').value;
+                passwords.teachers[teacherName] = newPass;
+            } else if (type === 'student') {
+                const key = document.getElementById('adminTargetUser').value;
+                passwords.students[key] = newPass;
+            }
+
+            localStorage.setItem('passwords', JSON.stringify(passwords));
+            alert('ምስጢር ቁጥሩ በስኬት ተቀይሯል!');
+            document.getElementById('adminNewPassword').value = '';
+        }
+
+        function addNewCourse() {
+            const program = document.getElementById('addCourseProgram').value;
+            const year = Number(document.getElementById('addCourseYear').value);
+            const semester = Number(document.getElementById('addCourseSemester').value);
+            const name = document.getElementById('addCourseName').value.trim();
+            const date = document.getElementById('addCourseDate').value.trim();
+            const teacher = document.getElementById('addCourseTeacher').value.trim();
+
+            if (!name || !date || !teacher) {
+                alert('እባክዎን ሁሉንም መስኮች ይሙሉ!');
+                return;
+            }
+
+            const newId = Date.now();
+            const newCourse = { id: newId, year: year, semester: semester, date: date, name: name, teacher: teacher };
+
+            if (program === 'degree') {
+                degreeCourses.push(newCourse);
+                localStorage.setItem('degreeCourses', JSON.stringify(degreeCourses));
+            } else {
+                diplomaCourses.push(newCourse);
+                localStorage.setItem('diplomaCourses', JSON.stringify(diplomaCourses));
+            }
+
+            if (!passwords.teachers[teacher]) {
+                passwords.teachers[teacher] = '123456';
+                localStorage.setItem('passwords', JSON.stringify(passwords));
+            }
+
+            alert('አዲስ ኮርስ በስኬት ተመዝግቧል!');
+            renderCourseTables();
+            populateTeacherCourseDropdown();
+        }
+
+        function addNewTeacher() {
+            const name = document.getElementById('addTeacherName').value.trim();
+            const pass = document.getElementById('addTeacherPassword').value.trim();
+
+            if (!name || !pass) {
+                alert('እባክዎን ስም እና ምስጢር ቁጥር ያስገቡ!');
+                return;
+            }
+
+            passwords.teachers[name] = pass;
+            localStorage.setItem('passwords', JSON.stringify(passwords));
+            alert('አዲስ መምህር በስኬት ተመዝግቧል!');
+            document.getElementById('addTeacherName').value = '';
+        }
+    </script>
+</body>
+</html>
