@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>የብርብር ቃለ ሕይወት ቤተክርስቲያን የማታ መጽሐፍ ቅዱስ ትምህርት ቤት - Management System</title>
+    <title>የብርብር ቃለ ሕይወት ቤተክርስቲያን የማታ መጽሐፍ ቅዱስ ትምህርት ቤት - Firebase Connected System</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts (Noto Sans Ethiopic & Inter) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Ethiopic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- SheetJS for Excel import/export -->
+    <!-- SheetJS for Excel Import/Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
@@ -46,34 +46,33 @@
 </head>
 <body class="h-full font-sans antialiased text-slate-800 flex flex-col min-h-screen">
 
-    <!-- Main Header -->
+    <!-- Top Header -->
     <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white shadow-lg sticky top-0 z-50 no-print">
-        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/20 shadow-inner">
-                    <i class="fa-solid font-bold text-2xl text-amber-400 fa-book-bible"></i>
+                <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
+                    <i class="fa-solid text-2xl text-amber-400 fa-book-bible"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-wide leading-tight">የብርብር ቃለ ሕይወት ቤተክርስቲያን</h1>
+                    <h1 class="text-lg font-bold tracking-wide">የብርብር ቃለ ሕይወት ቤተክርስቲያን</h1>
                     <p class="text-xs text-brand-100 font-light">የማታ መጽሐፍ ቅዱስ ትምህርት ቤት መቆጣጠሪያ ሲስተም</p>
                 </div>
             </div>
 
-            <!-- Role Selector & Auth -->
+            <!-- Role & Firebase Status Indicator -->
             <div class="flex items-center space-x-3">
                 <div class="bg-white/10 backdrop-blur-md rounded-lg p-1 border border-white/20 flex items-center">
                     <span class="text-xs text-brand-100 px-2 font-medium">ሚና፦</span>
-                    <select id="roleSelector" onchange="switchRole(this.value)" class="bg-brand-900 text-white text-xs font-semibold rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer">
-                        <option value="admin">አስተዳዳሪ (Admin)</option>
-                        <option value="teacher">መምህር (Teacher)</option>
-                        <option value="student">ተማሪ (Student)</option>
+                    <select id="roleSelector" onchange="switchUserRole(this.value)" class="bg-brand-900 text-white text-xs font-semibold rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-amber-400 cursor-pointer">
+                        <option value="admin">አስተዳዳሪ (Admin Dashboard)</option>
+                        <option value="teacher">መምህር (Teacher Login)</option>
                     </select>
                 </div>
-                
-                <button onclick="toggleFirebaseStatusModal()" id="dbStatusBtn" class="bg-amber-500/20 text-amber-300 text-xs px-3 py-1.5 rounded-lg border border-amber-400/30 hover:bg-amber-500/30 transition flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span id="dbStatusText">Firebase Status</span>
-                </button>
+
+                <div id="dbStatusBtn" class="bg-amber-500/20 text-amber-300 text-xs px-3 py-1.5 rounded-lg border border-amber-400/30 flex items-center gap-1.5">
+                    <span id="statusDot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span id="dbStatusText">Connecting Firebase...</span>
+                </div>
             </div>
         </div>
     </header>
@@ -84,41 +83,33 @@
         <aside class="w-full md:w-64 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 h-fit no-print">
             <div class="mb-4 pb-3 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                    <span class="text-xs uppercase tracking-wider text-slate-400 font-bold">የተጠቃሚ መረጃ</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-400 font-bold">የተጠቃሚ ሚና</span>
                     <p id="currentUserDisplay" class="text-sm font-bold text-slate-800">ሲስተም አስተዳዳሪ</p>
                 </div>
                 <span id="roleBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-100 text-brand-800">Admin</span>
             </div>
 
-            <nav class="space-y-1" id="sideNav">
-                <!-- Dynamic Navigation Links will be rendered here based on role -->
-            </nav>
-
-            <div class="mt-6 pt-4 border-t border-slate-100">
-                <button onclick="openChangePasswordModal()" class="w-full text-left text-xs text-slate-600 hover:text-brand-700 font-medium px-3 py-2 rounded-lg hover:bg-slate-50 transition flex items-center gap-2">
-                    <i class="fa-solid fa-key text-slate-400"></i> የይለፍ ቃል ቀይር
-                </button>
-            </div>
+            <nav class="space-y-1" id="sideNav"></nav>
         </aside>
 
-        <!-- Main Content Panel -->
+        <!-- Main Content Area -->
         <section class="flex-1 space-y-6">
 
-            <!-- Banner / Program Switcher -->
+            <!-- Program Selector Header -->
             <div class="bg-gradient-to-r from-slate-900 to-brand-900 rounded-2xl p-6 text-white shadow-md relative overflow-hidden no-print">
                 <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <span class="inline-block px-2.5 py-1 bg-amber-400/20 text-amber-300 text-xs font-semibold rounded-md border border-amber-400/30 mb-2">2017/2018 ዓ.ም የትምህርት ዘመን</span>
-                        <h2 class="text-xl md:text-2xl font-bold" id="viewTitle">የተማሪዎች ዝርዝር እና ምዝገባ</h2>
-                        <p class="text-slate-300 text-xs mt-1">ዲግሪ እና ዲፕሎማ ፕሮግራሞች (ከ1ኛ እስከ 3ኛ ዓመት)</p>
+                        <span class="inline-block px-2.5 py-1 bg-amber-400/20 text-amber-300 text-xs font-semibold rounded-md border border-amber-400/30 mb-2">2018/2019 ዓ.ም የትምህርት ዘመን</span>
+                        <h2 class="text-xl md:text-2xl font-bold" id="viewTitle">የመጽሐፍ ቅዱስ ትምህርት ቤት መቆጣጠሪያ</h2>
+                        <p class="text-slate-300 text-xs mt-1">ዲግሪ እና ዲፕሎማ ፕሮግራሞች (ከ1ኛ እስከ 3ኛ ዓመት - 1ኛ እና 2ኛ ሴሚስተር)</p>
                     </div>
 
                     <!-- Program Selector Filter -->
                     <div class="flex bg-white/10 p-1 rounded-xl backdrop-blur-md border border-white/20 self-start md:self-auto">
-                        <button id="progDegreeBtn" onclick="setActiveProgram('degree')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow">
+                        <button id="progDegreeBtn" onclick="setActiveProgram('Degree')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition text-white hover:bg-white/10">
                             ዲግሪ (Degree)
                         </button>
-                        <button id="progDiplomaBtn" onclick="setActiveProgram('diploma')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition text-white hover:bg-white/10">
+                        <button id="progDiplomaBtn" onclick="setActiveProgram('Diploma')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow">
                             ዲፕሎማ (Diploma)
                         </button>
                     </div>
@@ -126,239 +117,198 @@
             </div>
 
             <!-- Tab Content Container -->
-            <div id="tabContent">
-                <!-- Content injected dynamically via JS -->
-            </div>
+            <div id="tabContent"></div>
 
         </section>
     </main>
 
-    <!-- Modal: Change Password -->
-    <div id="passwordModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-lock text-brand-600"></i> የይለፍ ቃል መቀየሪያ
-            </h3>
-            <form onsubmit="handlePasswordChange(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">አሁን ያለው የይለፍ ቃል</label>
-                    <input type="password" required id="oldPassword" class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-brand-600 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">አዲስ የይለፍ ቃል</label>
-                    <input type="password" required id="newPassword" class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-brand-600 outline-none">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('passwordModal')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">ሰርዝ</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold bg-brand-600 text-white rounded-lg hover:bg-brand-700">ቀይር</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- PRINTABLE PDF TRANSCRIPT AREA -->
+    <div id="printableArea" class="print-only p-8 bg-white text-black"></div>
 
-    <!-- Modal: Firebase Settings & Config -->
-    <div id="firebaseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 border border-slate-100">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-fire text-amber-500"></i> Firebase Firestore Config
-                </h3>
-                <button onclick="closeModal('firebaseModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <p class="text-xs text-slate-600 mb-4">
-                የFirebase Firestore ዳታቤዝዎን ለማገናኘት ከዚሁ ፋይል መጨረሻ ላይ ያለውን <code class="bg-slate-100 text-brand-700 px-1 rounded">firebaseConfig</code> ኮድ ያስገቡ።
-            </p>
-            <div id="firebaseStatusDetail" class="p-3 rounded-xl bg-slate-50 border text-xs text-slate-700 space-y-2 mb-4">
-                <!-- Status details populated by JS -->
-            </div>
-            <div class="flex justify-end">
-                <button onclick="closeModal('firebaseModal')" class="px-4 py-2 text-xs font-semibold bg-slate-800 text-white rounded-lg">እሺ</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Printable Grade Sheet Target -->
-    <div id="printableArea" class="print-only p-8 bg-white text-black">
-        <!-- Rendered dynamically during print action -->
-    </div>
-
-    <!-- Firebase Modular SDK via CDN -->
+    <!-- FIREBASE MODULAR SDK INTEGRATION -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // =========================================================================
-        // ⚠️ FIREBASE CONFIGURATION PLACEHOLDER ⚠️
-        // Replace the object below with your actual Firebase project settings!
-        // =========================================================================
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "", // e.g., "AIzaSyD-YOUR_ACTUAL_API_KEY"
-            authDomain: "birbir-bible-school.firebaseapp.com",
-            projectId: "birbir-bible-school",
-            storageBucket: "birbir-bible-school.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef123456"
+            apiKey: "AIzaSyCri6WGB2cmmbJ1mX5XSNnf15auoZSKsxc",
+            authDomain: "bible-school-418d7.firebaseapp.com",
+            projectId: "bible-school-418d7",
+            storageBucket: "bible-school-418d7.firebasestorage.app",
+            messagingSenderId: "855218354182",
+            appId: "1:855218354182:web:bbc0fbd05b152f3f37eb87"
         };
 
-        // Initialize Firebase safely
-        let db = null;
-        let auth = null;
-        let firebaseActive = false;
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        try {
-            if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "") {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                signInAnonymously(auth).catch(err => console.warn("Firebase Auth Error:", err));
-                firebaseActive = true;
-            }
-        } catch (e) {
-            console.warn("Firebase init failed, switching to local state.", e);
-        }
-
-        // Global State & Window exports for UI binding
-        window.firebaseActive = firebaseActive;
-        window.db = db;
-        window.collection = collection;
-        window.doc = doc;
-        window.setDoc = setDoc;
-        window.getDocs = getDocs;
-        window.onSnapshot = onSnapshot;
+        signInAnonymously(auth).then(() => {
+            document.getElementById('dbStatusText').innerText = "Firebase Connected";
+            document.getElementById('statusDot').className = "w-2 h-2 rounded-full bg-emerald-400";
+            window.firebaseConnected = true;
+        }).catch((err) => {
+            console.error("Firebase Error:", err);
+            document.getElementById('dbStatusText').innerText = "Local Mode";
+        });
     </script>
 
     <script>
-        // =========================================================================
-        // PRE-POPULATED STUDENT DATA (35 DEGREE & 35 DIPLOMA STUDENTS)
-        // =========================================================================
-        const generateInitialStudents = (program) => {
-            const prefix = program === 'degree' ? 'DEG' : 'DIP';
-            const firstNames = [
-                "አበበ", "ዮሐንስ", "ማርቆስ", "ማቴዎስ", "ሉቃስ", "ጳውሎስ", "ጴጥሮስ", "ዳንኤል", 
-                "ሳሙኤል", "ዳዊት", "ሰለሞን", "ኤርሚያስ", "እሳይያስ", "ሕዝቅኤል", "ዮናስ", "አብርሃም", 
-                "ይስሐቅ", "ያዕቆብ", "ዮሴፍ", "ሙሴ", "ኢያሱ", "ጊዴዎን", "ሣምሶን", "ቦዔዝ", 
-                "ሩት", "አስቴር", "ማርያም", "ሐና", "ሣራ", "ርብቃ", "ራሔል", "ልያ", "ኤልሳቤጥ", "ሜሮን", "ፌበን"
-            ];
-            const fatherNames = [
-                "ተስፋዬ", "ወልደማርያም", "ገብረመድህን", "ኃይሌ", "በቀለ", "አለሙ", "ታደሰ", "መኮንን",
-                "ካሳሁን", "አበበ", "ተክሌ", "ብርሃኑ", "አያሌው", "ገብሬ", "ግርማ", "ዘውዴ"
-            ];
-            const gFathers = ["ወልዴ", "ወርቁ", "ታደሰ", "በየነ", "ተፈራ", "እሸቱ", "ልጅነህ", "ታፈሰ"];
-
-            return Array.from({ length: 35 }, (_, i) => {
-                const idNum = (i + 1).toString().padStart(3, '0');
-                const yr = (i % 3) + 1; // Years 1, 2, 3
-                return {
-                    id: `${prefix}-2024-${idNum}`,
-                    name: `${firstNames[i % firstNames.length]} ${fatherNames[i % fatherNames.length]} ${gFathers[i % gFathers.length]}`,
-                    program: program,
-                    year: yr,
-                    semester: 1,
-                    status: 'Active',
-                    grades: {
-                        "1-1": { "BIB-101": "A", "THE-101": "B+" },
-                        "1-2": { "HIS-102": "A-" },
-                        "2-1": { "BIB-201": "B" }
-                    }
-                };
-            });
-        };
-
-        // Local Storage / State Fallback
+        // GLOBAL APP STATE & DISCUSSION DATA
         let appState = {
-            currentRole: 'admin', // admin, teacher, student
-            activeProgram: 'degree', // degree, diploma
-            activeTab: 'students',
-            students: JSON.parse(localStorage.getItem('bb_students')) || [
-                ...generateInitialStudents('degree'),
-                ...generateInitialStudents('diploma')
+            currentRole: 'admin',
+            loggedInTeacher: null,
+            activeProgram: 'Diploma',
+            activeTab: 'dashboard',
+            selectedYear: 'all',
+            selectedSemester: 'all',
+
+            teachers: [
+                { id: "T101", name: "መምህር ዮሐንስ", subject: "ሥነ-አፈታት", password: "123" },
+                { id: "T102", name: "መምህር ተስፋዬ", subject: "የብሉይ ኪዳን ጥናት", password: "123" }
             ],
+
             courses: [
-                { id: "BIB-101", title: "የብሉይ ኪዳን ጥናት (Old Testament Survey)", credits: 3, year: 1, semester: 1, program: "both" },
-                { id: "THE-101", title: "የክርስቲያን እምነት መሠረቶች (Systematic Theology 1)", credits: 3, year: 1, semester: 1, program: "both" },
-                { id: "HIS-102", title: "የቤተክርስቲያን ታሪክ (Church History)", credits: 2, year: 1, semester: 2, program: "both" },
-                { id: "BIB-201", title: "የሐዲስ ኪዳን ጥናት (New Testament Survey)", credits: 3, year: 2, semester: 1, program: "both" },
-                { id: "MIN-301", title: "የአመራር እና አገልግሎት ጥናት (Pastoral Leadership)", credits: 3, year: 3, semester: 1, program: "degree" },
-                { id: "HOM-302", title: "የስብከት አዘጋጃጀት (Homiletics)", credits: 2, year: 3, semester: 2, program: "both" }
+                { code: "BIB-101", name: "መጽሐፍ ቅዱስና እግዚአብሔር", type: "መጽሐፍ ቅዱስ", credits: 3, year: 1, semester: 1, teacher: "መምህር ተስፋዬ" },
+                { code: "THE-101", name: "ሥነ-አፈታት (Hermeneutics)", type: "ሥነ-አፈታት", credits: 3, year: 1, semester: 1, teacher: "መምህር ዮሐንስ" },
+                { code: "HIS-102", name: "የቤተክርስቲያን ታሪክ", type: "ታሪክ", credits: 2, year: 1, semester: 2, teacher: "መምህር ዮሐንስ" }
             ],
-            schedules: [
-                { day: "ሰኞ (Monday)", time: "11:30 - 1:30 ማታ", course: "የብሉይ ኪዳን ጥናት", teacher: "መምህር ተስፋዬ", room: "ክፍል 1" },
-                { day: "ማክሰኞ (Tuesday)", time: "11:30 - 1:30 ማታ", course: "የክርስቲያን እምነት መሠረቶች", teacher: "ዶ/ር ዳንኤል", room: "ክፍል 2" },
-                { day: "ሐሙስ (Thursday)", time: "11:30 - 1:30 ማታ", course: "የሐዲስ ኪዳን ጥናት", teacher: "መምህር ያዕቆብ", room: "ክፍል 1" }
+
+            students: [
+                // DIPLOMA
+                { id: "201901", name: "ሊዲያ ጳዉሎስ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: { "BIB-101": 88, "THE-101": 92 } },
+                { id: "201902", name: "መሐመድ ቶማ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: { "BIB-101": 78, "THE-101": 84 } },
+                { id: "201903", name: "መስከረም ዳዊት", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201904", name: "መብራት ደምሴ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201811", name: "ሙሉቀን ዘለቀ ፋልታሞ", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: { "BIB-101": 65 } },
+                { id: "201806", name: "ማርቆስ ቱማ", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201905", name: "ማቴዎስ መስቀሌ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201906", name: "ማገኝ ማጮ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201907", name: "ምስራቅ ኩኬ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201908", name: "ሠራዊት ሳሙኤል", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201909", name: "ስንቅነሽ ሴታ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201803", name: "ስንታየሁ ቱማቶ", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201910", name: "ቤተል መሸሻ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201911", name: "ቤተል ሳሙኤል", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201912", name: "ቤዛነህ ማቴዎስ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201913", name: "ብንያም ሕዝቅኤል", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201914", name: "ተረፈች ተስፋዬ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201915", name: "ተመስገን መርድነህ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201916", name: "ቸርነት ገዛኸኝ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201917", name: "አልማዝ አበራ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201918", name: "አመነች ነዉሌ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201802", name: "አማኑኤል ባሳ", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201807", name: "አስራት ኤልያስ", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201801", name: "አስራት ዳንኤል", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201919", name: "አበራ አለቆ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201920", name: "አበባየሁ አየለ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201921", name: "አብራሃም ዱቃ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201805", name: "ከፍያለዉ ካስትሮ", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201922", name: "ዘላለም ማዴቦ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201923", name: "ደነቀ አለማየሁ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201808", name: "ጠቅላዩ ፎላ", gender: "ወ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201804", name: "ጥሩነሽ መሐመድ", gender: "ሴ", program: "Diploma", year: 2, semester: 1, grades: {} },
+                { id: "201924", name: "አማኑኤል አዴማ", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201925", name: "ከፍያለዉ ከማል", gender: "ወ", program: "Diploma", year: 1, semester: 1, grades: {} },
+                { id: "201926", name: "አበራሽ አዳዬ", gender: "ሴ", program: "Diploma", year: 1, semester: 1, grades: {} },
+
+                // DEGREE
+                { id: "201901", name: "ሕዝቅኤል ፁንቃ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: { "THE-101": 95 } },
+                { id: "201902", name: "መሐመድ ሀርቶ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: { "THE-101": 81 } },
+                { id: "201903", name: "መሰረት ማቴዎስ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201904", name: "መንግሥቱ ፎላ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201905", name: "ማቱሳላ ጴጥሮስ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201906", name: "ማቴዎስ መስቀሌ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201907", name: "ማቴዎስ ጁታ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201908", name: "ሚኖታ ደባልቄ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201909", name: "ምህረት ሚልክያስ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201910", name: "ሳሙኤል ኬቶ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201911", name: "ሳምሶን አብራሃም", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201912", name: "ሸሪፎ ሻራ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201913", name: "በረከት ፎላ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201914", name: "በርገነ ባፋ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201915", name: "ተመስገን መንግሥቱ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201916", name: "ታምራት በቀሌ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201917", name: "ኃይልዬ አድሱ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201918", name: "አለሙ ሌራ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201919", name: "አለሙ አራ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201920", name: "አልማዝ አስራት", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201921", name: "አማኑኤል ደቤና", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201922", name: "አሰገደች አየለ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201923", name: "አሸብር ከበደ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201924", name: "አበበች ለራንሶ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201925", name: "አይናለም ማንጁራ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201926", name: "አንዱዓለም ሉቃስ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201927", name: "አንድነት ለማ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201928", name: "አኬና አዴቶ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201929", name: "ኢተነሽ በሩ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201930", name: "ደስታ ጉጋላ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201931", name: "ጩቃሎ ጩቱሎ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201932", name: "ጴጥሮስ ገዘኽኝ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201933", name: "ፈቃደ ብርሃኑ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201934", name: "አቤል ጴጥሮስ", gender: "ወ", program: "Degree", year: 1, semester: 1, grades: {} },
+                { id: "201935", name: "ትክክሏ ሴባ", gender: "ሴ", program: "Degree", year: 1, semester: 1, grades: {} }
             ]
         };
 
-        // Persist to local storage
-        function saveState() {
-            localStorage.setItem('bb_students', JSON.stringify(appState.students));
-            updateDBStatusUI();
-        }
-
-        // Grade Point Average Calculation
-        const gradePoints = { 'A+': 4.0, 'A': 4.0, 'A-': 3.75, 'B+': 3.5, 'B': 3.0, 'B-': 2.75, 'C+': 2.5, 'C': 2.0, 'C-': 1.75, 'D': 1.0, 'F': 0.0 };
-
-        function calculateGPA(student, year, semester) {
-            const key = `${year}-${semester}`;
-            const semesterGrades = student.grades ? student.grades[key] : null;
-            if (!semesterGrades) return 'N/A';
-
-            let totalPoints = 0;
-            let totalCredits = 0;
-
-            Object.entries(semesterGrades).forEach(([courseId, grade]) => {
-                const course = appState.courses.find(c => c.id === courseId);
-                const credits = course ? course.credits : 3;
-                const points = gradePoints[grade] !== undefined ? gradePoints[grade] : 0;
-                totalPoints += points * credits;
-                totalCredits += credits;
-            });
-
-            return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : 'N/A';
-        }
-
-        // Role Management & UI Rendering
-        function switchRole(role) {
-            appState.currentRole = role;
-            document.getElementById('currentUserDisplay').innerText = 
-                role === 'admin' ? 'ሲስተም አስተዳዳሪ' : (role === 'teacher' ? 'መምህር ዮሐንስ' : 'ተማሪ አበበ በቀለ');
-            document.getElementById('roleBadge').innerText = role.toUpperCase();
+        function initApp() {
             renderNavigation();
             renderTabContent();
         }
 
-        function setActiveProgram(prog) {
-            appState.activeProgram = prog;
-            document.getElementById('progDegreeBtn').className = prog === 'degree' 
-                ? 'px-4 py-1.5 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow'
-                : 'px-4 py-1.5 rounded-lg text-xs font-bold transition text-white hover:bg-white/10';
-            document.getElementById('progDiplomaBtn').className = prog === 'diploma' 
-                ? 'px-4 py-1.5 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow'
-                : 'px-4 py-1.5 rounded-lg text-xs font-bold transition text-white hover:bg-white/10';
+        function switchUserRole(role) {
+            if (role === 'teacher') {
+                const password = prompt("እባክዎ የመምህር የይለፍ ቃል (Password) ያስገቡ፦ (ምሳሌ፦ 123)");
+                const matchedTeacher = appState.teachers.find(t => t.password === password);
+                if (matchedTeacher) {
+                    appState.currentRole = 'teacher';
+                    appState.loggedInTeacher = matchedTeacher;
+                    appState.activeTab = 'courses';
+                    alert(`እንኳን ደህና መጡ ${matchedTeacher.name}!`);
+                } else {
+                    alert("የተሳሳተ የይለፍ ቃል ነው!");
+                    document.getElementById('roleSelector').value = 'admin';
+                    return;
+                }
+            } else {
+                appState.currentRole = 'admin';
+                appState.loggedInTeacher = null;
+                appState.activeTab = 'dashboard';
+            }
+
+            document.getElementById('currentUserDisplay').innerText = 
+                appState.currentRole === 'admin' ? 'ሲስተም አስተዳዳሪ' : appState.loggedInTeacher.name;
+            document.getElementById('roleBadge').innerText = appState.currentRole.toUpperCase();
+            
+            renderNavigation();
             renderTabContent();
         }
 
-        // Navigation Links Builder
         function renderNavigation() {
             const nav = document.getElementById('sideNav');
             let links = [
+                { id: 'dashboard', label: 'አስተዳዳሪ ዳሽቦርድ', icon: 'fa-chart-pie' },
                 { id: 'students', label: 'ተማሪዎች (Students)', icon: 'fa-user-graduate' },
-                { id: 'courses', label: 'ኮርሶች (Courses)', icon: 'fa-book-open' },
-                { id: 'grades', label: 'ውጤት መዝገብ (Grades)', icon: 'fa-file-signature' },
-                { id: 'schedule', label: 'የክፍል ፕሮግራም (Schedule)', icon: 'fa-calendar-days' }
+                { id: 'courses', label: 'ኮርሶች እና መምህራን', icon: 'fa-book-open' },
+                { id: 'teachers', label: 'መምህራን እና ፓስዎርድ', icon: 'fa-chalkboard-user' },
+                { id: 'metrics', label: 'የውጤት ማትሪክስ (Metrics)', icon: 'fa-square-poll-vertical' },
+                { id: 'pdf', label: 'PDF Transcript ማውረጃ', icon: 'fa-file-pdf' }
             ];
 
-            if (appState.currentRole === 'student') {
+            if (appState.currentRole === 'teacher') {
                 links = [
-                    { id: 'grades', label: 'የእኔ ውጤት (My Transcript)', icon: 'fa-file-signature' },
-                    { id: 'schedule', label: 'የክፍል ፕሮግራም (Schedule)', icon: 'fa-calendar-days' }
+                    { id: 'courses', label: 'የኮርስ እና መምህር ዝርዝር', icon: 'fa-book-open' },
+                    { id: 'metrics', label: 'የውጤት ማትሪክስ', icon: 'fa-square-poll-vertical' }
                 ];
             }
 
-            nav.innerHTML = links.map(link => `
-                <button onclick="setActiveTab('${link.id}')" class="w-full text-left text-xs font-semibold px-3 py-2.5 rounded-xl transition flex items-center gap-3 ${appState.activeTab === link.id ? 'bg-brand-50 text-brand-800 font-bold border border-brand-100' : 'text-slate-600 hover:bg-slate-50'}">
-                    <i class="fa-solid ${link.icon} text-sm w-5 text-center"></i>
-                    ${link.label}
+            nav.innerHTML = links.map(l => `
+                <button onclick="setActiveTab('${l.id}')" class="w-full text-left text-xs font-semibold px-3 py-2.5 rounded-xl transition flex items-center gap-3 ${appState.activeTab === l.id ? 'bg-brand-50 text-brand-800 font-bold border border-brand-100' : 'text-slate-600 hover:bg-slate-50'}">
+                    <i class="fa-solid ${l.icon} text-sm w-5 text-center"></i>
+                    ${l.label}
                 </button>
             `).join('');
         }
@@ -369,58 +319,105 @@
             renderTabContent();
         }
 
-        // Render Views
+        function setActiveProgram(prog) {
+            appState.activeProgram = prog;
+            document.getElementById('progDegreeBtn').className = prog === 'Degree' 
+                ? 'px-4 py-1.5 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow'
+                : 'px-4 py-1.5 rounded-lg text-xs font-bold transition text-white hover:bg-white/10';
+            document.getElementById('progDiplomaBtn').className = prog === 'Diploma' 
+                ? 'px-4 py-1.5 rounded-lg text-xs font-bold transition bg-white text-slate-900 shadow'
+                : 'px-4 py-1.5 rounded-lg text-xs font-bold transition text-white hover:bg-white/10';
+            renderTabContent();
+        }
+
         function renderTabContent() {
             const container = document.getElementById('tabContent');
-            
-            // Filter students based on active program (Degree / Diploma)
-            const filteredStudents = appState.students.filter(s => s.program === appState.activeProgram);
 
-            if (appState.activeTab === 'students') {
+            // DASHBOARD
+            if (appState.activeTab === 'dashboard') {
+                container.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                                <div class="w-12 h-12 bg-brand-50 text-brand-700 rounded-xl flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-users"></i></div>
+                                <div><p class="text-xs text-slate-500 font-medium">አጠቃላይ ተማሪዎች</p><h3 class="text-xl font-bold text-slate-800">${appState.students.length}</h3></div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                                <div class="w-12 h-12 bg-amber-50 text-amber-700 rounded-xl flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-graduation-cap"></i></div>
+                                <div><p class="text-xs text-slate-500 font-medium">የዲግሪ / ዲፕሎማ</p><h3 class="text-lg font-bold text-slate-800">${appState.students.filter(s => s.program === 'Degree').length} / ${appState.students.filter(s => s.program === 'Diploma').length}</h3></div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-50 text-blue-700 rounded-xl flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-book"></i></div>
+                                <div><p class="text-xs text-slate-500 font-medium">የተመዘገቡ ኮርሶች</p><h3 class="text-xl font-bold text-slate-800">${appState.courses.length}</h3></div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                                <div class="w-12 h-12 bg-purple-50 text-purple-700 rounded-xl flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-chalkboard-user"></i></div>
+                                <div><p class="text-xs text-slate-500 font-medium">አጠቃላይ መምህራን</p><h3 class="text-xl font-bold text-slate-800">${appState.teachers.length}</h3></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // STUDENTS TAB
+            else if (appState.activeTab === 'students') {
+                let filtered = appState.students.filter(s => s.program === appState.activeProgram);
+                if (appState.selectedYear !== 'all') filtered = filtered.filter(s => s.year == appState.selectedYear);
+                if (appState.selectedSemester !== 'all') filtered = filtered.filter(s => s.semester == appState.selectedSemester);
+
                 container.innerHTML = `
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
                         <div class="flex flex-wrap justify-between items-center gap-4">
+                            <h3 class="font-bold text-slate-800 text-base">የ${appState.activeProgram === 'Degree' ? 'ዲግሪ' : 'ዲፕሎማ'} ተማሪዎች መዝገብ</h3>
                             <div class="flex items-center gap-2">
-                                <h3 class="font-bold text-slate-800 text-base">የ${appState.activeProgram === 'degree' ? 'ዲግሪ' : 'ዲፕሎማ'} ተማሪዎች መዝገብ</h3>
-                                <span class="bg-slate-100 text-slate-600 text-xs font-bold px-2 py-0.5 rounded-full">${filteredStudents.length} ተማሪዎች</span>
+                                <button onclick="exportToExcel()" class="bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-xl"><i class="fa-solid fa-file-excel"></i> Excel Download</button>
+                                ${appState.currentRole === 'admin' ? `
+                                <label class="bg-slate-800 text-white text-xs font-bold px-3 py-2 rounded-xl cursor-pointer flex items-center gap-1">
+                                    <i class="fa-solid fa-file-upload"></i> Excel Upload
+                                    <input type="file" onchange="importExcel(event)" accept=".xlsx, .xls" class="hidden">
+                                </label>` : ''}
                             </div>
-                            
-                            ${appState.currentRole === 'admin' ? `
-                            <div class="flex items-center gap-2">
-                                <button onclick="exportToExcel()" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-file-excel text-sm"></i> Excel Export
-                                </button>
-                                <button onclick="addNewStudentPrompt()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5">
-                                    <i class="fa-solid fa-plus"></i> አዲስ ተማሪ መዝግብ
-                                </button>
-                            </div>` : ''}
                         </div>
 
-                        <!-- Table -->
+                        <div class="flex flex-wrap gap-4 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs font-semibold">
+                            <div class="flex items-center gap-2">
+                                <label class="text-slate-600">ዓመት:</label>
+                                <select onchange="appState.selectedYear=this.value; renderTabContent();" class="bg-white px-2.5 py-1 rounded-lg border">
+                                    <option value="all" ${appState.selectedYear==='all'?'selected':''}>ሁሉም ዓመታት</option>
+                                    <option value="1" ${appState.selectedYear==='1'?'selected':''}>1ኛ ዓመት</option>
+                                    <option value="2" ${appState.selectedYear==='2'?'selected':''}>2ኛ ዓመት</option>
+                                    <option value="3" ${appState.selectedYear==='3'?'selected':''}>3ኛ ዓመት</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label class="text-slate-600">ሴሚስተር:</label>
+                                <select onchange="appState.selectedSemester=this.value; renderTabContent();" class="bg-white px-2.5 py-1 rounded-lg border">
+                                    <option value="all" ${appState.selectedSemester==='all'?'selected':''}>ሁሉም ሴሚስተሮች</option>
+                                    <option value="1" ${appState.selectedSemester==='1'?'selected':''}>1ኛ ሴሚስተር</option>
+                                    <option value="2" ${appState.selectedSemester==='2'?'selected':''}>2ኛ ሴሚስተር</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="overflow-x-auto rounded-xl border border-slate-100">
                             <table class="w-full text-left text-xs border-collapse">
                                 <thead>
-                                    <tr class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                                        <th class="p-3">ተ.ቁ ID</th>
-                                        <th class="p-3">ሙሉ ስም</th>
-                                        <th class="p-3">ዓመት</th>
-                                        <th class="p-3">ሴሚስተር</th>
-                                        <th class="p-3">GPA (1-1)</th>
-                                        <th class="p-3 text-right">እርምጃ</th>
+                                    <tr class="bg-slate-50 text-slate-500 font-bold border-b">
+                                        <th class="p-3">ተ.ቁ</th>
+                                        <th class="p-3">መለያ ኮድ (ID)</th>
+                                        <th class="p-3">የተማሪው ስም</th>
+                                        <th class="p-3">ጾታ</th>
+                                        <th class="p-3">ዓመት / ሴሚስተር</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-slate-700">
-                                    ${filteredStudents.map(s => `
-                                        <tr class="hover:bg-slate-50/80 transition">
+                                    ${filtered.map((s, idx) => `
+                                        <tr class="hover:bg-slate-50 transition">
+                                            <td class="p-3 text-slate-400">${idx + 1}</td>
                                             <td class="p-3 font-mono font-medium text-brand-700">${s.id}</td>
                                             <td class="p-3 font-semibold text-slate-800">${s.name}</td>
-                                            <td class="p-3">${s.year}ኛ ዓመት</td>
-                                            <td class="p-3">${s.semester}ኛ ሴሚስተር</td>
-                                            <td class="p-3 font-bold text-slate-800">${calculateGPA(s, 1, 1)}</td>
-                                            <td class="p-3 text-right space-x-2">
-                                                <button onclick="viewStudentTranscript('${s.id}')" class="text-brand-600 hover:text-brand-800 font-semibold underline">ትራንስክሪፕት</button>
-                                                ${appState.currentRole === 'admin' ? `<button onclick="deleteStudent('${s.id}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button>` : ''}
-                                            </td>
+                                            <td class="p-3">${s.gender}</td>
+                                            <td class="p-3">${s.year}ኛ ዓመት (${s.semester}ኛ ሴሚስተር)</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -428,275 +425,218 @@
                         </div>
                     </div>
                 `;
-            } else if (appState.activeTab === 'courses') {
-                container.innerHTML = `
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800 text-base">የኮርሶች እና የክሬዲት ሰዓት መዝገብ</h3>
-                            ${appState.currentRole === 'admin' ? `<button onclick="addCoursePrompt()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition">+ አዲስ ኮርስ</button>` : ''}
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            ${appState.courses.map(c => `
-                                <div class="p-4 rounded-xl border border-slate-100 bg-slate-50/50 flex justify-between items-start">
-                                    <div>
-                                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-100 text-brand-800 font-mono">${c.id}</span>
-                                        <h4 class="font-bold text-slate-800 text-sm mt-1">${c.title}</h4>
-                                        <p class="text-xs text-slate-500 mt-1">${c.year}ኛ ዓመት | ${c.semester}ኛ ሴሚስተር</p>
-                                    </div>
-                                    <span class="text-xs font-bold bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">${c.credits} Cr.Hrs</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            } else if (appState.activeTab === 'grades') {
-                container.innerHTML = `
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800 text-base">የውጤት መመዝገቢያ እና ማተሚያ</h3>
-                        </div>
-                        <p class="text-xs text-slate-500">ተማሪ በመምረጥ የውጤት መዝገብ ይመልከቱ ወይም ውጤት ያስገቡ።</p>
-                        
-                        <div class="flex gap-4 items-center">
-                            <select id="studentSelect" onchange="renderGradeSheet(this.value)" class="px-3 py-2 border rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-600 outline-none w-72">
-                                <option value="">-- ተማሪ ይምረጡ --</option>
-                                ${filteredStudents.map(s => `<option value="${s.id}">${s.id} - ${s.name}</option>`).join('')}
-                            </select>
-                        </div>
+            }
 
-                        <div id="gradeSheetContainer" class="pt-4">
-                            <div class="text-center py-8 text-slate-400 text-xs">እባክዎን ከላይ ተማሪ ይምረጡ።</div>
-                        </div>
-                    </div>
-                `;
-            } else if (appState.activeTab === 'schedule') {
+            // COURSES TAB
+            else if (appState.activeTab === 'courses') {
                 container.innerHTML = `
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-                        <h3 class="font-bold text-slate-800 text-base">የማታ ትምህርት መርሃ ግብር (Schedule)</h3>
-                        <div class="space-y-3">
-                            ${appState.schedules.map(sc => `
-                                <div class="p-4 rounded-xl border border-slate-100 bg-slate-50 flex flex-wrap justify-between items-center gap-2">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-xs">
-                                            ${sc.day.substring(0, 2)}
-                                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${appState.currentRole === 'admin' ? `
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4"><i class="fa-solid fa-plus text-brand-600"></i> አዲስ ኮርስ እና መምህር</h3>
+                            <form onsubmit="addNewCourse(event)" class="space-y-3 text-xs">
+                                <div><label class="block font-semibold text-slate-600 mb-1">የኮርስ ስም</label><input type="text" id="courseName" required class="w-full p-2 border rounded-lg"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">የኮርስ ኮድ</label><input type="text" id="courseCode" required class="w-full p-2 border rounded-lg"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">የኮርስ ዓይነት</label><input type="text" id="courseType" required class="w-full p-2 border rounded-lg"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">የመምህሩ ስም</label><input type="text" id="courseTeacher" required class="w-full p-2 border rounded-lg"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">ክሬዲት ሰዓት</label><input type="number" id="courseCredits" value="3" required class="w-full p-2 border rounded-lg"></div>
+                                <button type="submit" class="w-full py-2 bg-brand-700 text-white font-bold rounded-lg">ኮርስ መዝግብ</button>
+                            </form>
+                        </div>` : ''}
+
+                        <div class="${appState.currentRole === 'admin' ? 'md:col-span-2' : 'md:col-span-3'} bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">የኮርሶች እና መምህራን ዝርዝር (Courses & Teachers)</h3>
+                            <div class="space-y-3">
+                                ${appState.courses.map(c => `
+                                    <div class="p-4 bg-slate-50 border rounded-xl flex justify-between items-center text-xs">
                                         <div>
-                                            <h4 class="font-bold text-slate-800 text-xs">${sc.course}</h4>
-                                            <p class="text-[11px] text-slate-500">${sc.teacher} | ${sc.room}</p>
+                                            <span class="font-bold font-mono text-brand-700 bg-brand-100 px-2 py-0.5 rounded">${c.code}</span>
+                                            <h4 class="font-bold text-slate-800 text-sm mt-1">${c.name}</h4>
+                                            <p class="text-slate-500 mt-1">ዓይነት፦ <b>${c.type}</b></p>
+                                            <p class="text-brand-800 mt-0.5"><i class="fa-solid fa-chalkboard-user"></i> መምህር፦ <b>${c.teacher}</b></p>
                                         </div>
+                                        <span class="font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg">${c.credits} Cr.Hrs</span>
                                     </div>
-                                    <span class="text-xs font-bold text-brand-700 bg-brand-100 px-3 py-1 rounded-full">${sc.time}</span>
-                                </div>
-                            `).join('')}
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // TEACHERS TAB
+            else if (appState.activeTab === 'teachers') {
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm h-fit">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">አዲስ መምህር እና መቆለፊያ</h3>
+                            <form onsubmit="addNewTeacher(event)" class="space-y-3 text-xs">
+                                <div><label class="block font-semibold text-slate-600 mb-1">ሙሉ ስም</label><input type="text" id="teacherName" required class="w-full p-2 border rounded-lg"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">የሚያስተምሩት ኮርስ</label><input type="text" id="teacherSubject" required class="w-full p-2 border rounded-lg"></div>
+                                <div><label class="block font-semibold text-slate-600 mb-1">የይለፍ ቃል (Password)</label><input type="password" id="teacherPassword" required class="w-full p-2 border rounded-lg"></div>
+                                <button type="submit" class="w-full py-2 bg-brand-700 text-white font-bold rounded-lg">መምህር መዝግብ</button>
+                            </form>
+                        </div>
+                        <div class="md:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">የተመዘገቡ መምህራን እና ፓስዎርዶች</h3>
+                            <div class="space-y-3">
+                                ${appState.teachers.map(t => `
+                                    <div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center text-xs">
+                                        <div><h4 class="font-bold text-slate-800">${t.name}</h4><p class="text-slate-500">${t.subject}</p></div>
+                                        <span class="font-mono bg-slate-200 text-slate-700 px-2 py-1 rounded">Password: ${t.password}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // METRICS TAB
+            else if (appState.activeTab === 'metrics') {
+                const programStudents = appState.students.filter(s => s.program === appState.activeProgram);
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                        <h3 class="font-bold text-slate-800 text-base"><i class="fa-solid fa-square-poll-vertical text-brand-600"></i> የተማሪዎች ውጤት ማትሪክስ (Result Metrics)</h3>
+                        <div class="overflow-x-auto rounded-xl border border-slate-100">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-500 font-bold border-b">
+                                        <th class="p-3">ተ.ቁ</th>
+                                        <th class="p-3">መለያ ኮድ (ID)</th>
+                                        <th class="p-3">የተማሪው ስም</th>
+                                        <th class="p-3">የተመዘገቡ ውጤቶች</th>
+                                        <th class="p-3 text-center">አማካኝ</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    ${programStudents.map((s, idx) => {
+                                        const scores = Object.values(s.grades);
+                                        const avg = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : '0.0';
+                                        return `
+                                            <tr class="hover:bg-slate-50 transition">
+                                                <td class="p-3 text-slate-400">${idx + 1}</td>
+                                                <td class="p-3 font-mono text-brand-700">${s.id}</td>
+                                                <td class="p-3 font-semibold text-slate-800">${s.name}</td>
+                                                <td class="p-3">${Object.entries(s.grades).map(([code, val]) => `<span class="bg-slate-100 px-2 py-0.5 rounded font-mono mr-1">${code}: <b>${val}%</b></span>`).join('') || 'ውጤት የለም'}</td>
+                                                <td class="p-3 text-center font-bold text-brand-700 text-sm">${avg}%</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // PDF TRANSCRIPT
+            else if (appState.activeTab === 'pdf') {
+                container.innerHTML = `
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-800 text-sm">የተማሪ ውጤት ማጠቃለያ በPDF ማውረጃ</h3>
+                        <div class="flex items-center gap-3">
+                            <select id="selectedStudentPdf" class="p-2 border rounded-xl text-xs font-semibold w-72">
+                                <option value="">-- ተማሪ ይምረጡ --</option>
+                                ${appState.students.filter(s => s.program === appState.activeProgram).map(s => `<option value="${s.id}">${s.id} -${s.name}</option>`).join('')}
+                            </select>
+                            <button onclick="downloadStudentPdf()" class="bg-slate-900 text-white text-xs font-bold px-4 py-2 rounded-xl"><i class="fa-solid fa-file-pdf text-red-400"></i> PDF Transcript አውርድ</button>
                         </div>
                     </div>
                 `;
             }
         }
 
-        function renderGradeSheet(studentId) {
-            const student = appState.students.find(s => s.id === studentId);
-            const container = document.getElementById('gradeSheetContainer');
-            if (!student) {
-                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">ተማሪ አልተመረጠም።</div>`;
-                return;
-            }
-
-            container.innerHTML = `
-                <div class="border rounded-2xl p-6 space-y-6 bg-slate-50/50">
-                    <div class="flex justify-between items-start border-b pb-4">
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900">${student.name}</h2>
-                            <p class="text-xs text-slate-500 font-mono">መለያ ቁጥር: ${student.id} | ፕሮግራም: ${student.program.toUpperCase()}</p>
-                        </div>
-                        <button onclick="printTranscript('${student.id}')" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-xl font-bold hover:bg-slate-900 transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-print"></i> አትም / PDF Save
-                        </button>
-                    </div>
-
-                    <!-- Semester 1-1 Grades -->
-                    <div class="space-y-2">
-                        <h4 class="font-bold text-slate-800 text-xs">1ኛ ዓመት - 1ኛ ሴሚስተር</h4>
-                        <table class="w-full text-xs bg-white rounded-xl border overflow-hidden">
-                            <thead class="bg-slate-100 text-slate-600">
-                                <tr>
-                                    <th class="p-2.5 text-left">ኮርስ</th>
-                                    <th class="p-2.5 text-center">ክሬዲት</th>
-                                    <th class="p-2.5 text-right">ውጤት (Grade)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${appState.courses.filter(c => c.year === 1 && c.semester === 1).map(c => `
-                                    <tr class="border-t">
-                                        <td class="p-2.5 font-medium">${c.title}</td>
-                                        <td class="p-2.5 text-center">${c.credits}</td>
-                                        <td class="p-2.5 text-right font-bold text-brand-700">
-                                            ${student.grades && student.grades['1-1'] && student.grades['1-1'][c.id] ? student.grades['1-1'][c.id] : 'A'}
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                        <div class="text-right text-xs font-bold text-slate-700">
-                            የሴሚስተሩ GPA: <span class="text-brand-700">${calculateGPA(student, 1, 1)}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
+        // FUNCTIONS
+        function addNewCourse(e) {
+            e.preventDefault();
+            appState.courses.push({
+                code: document.getElementById('courseCode').value,
+                name: document.getElementById('courseName').value,
+                type: document.getElementById('courseType').value,
+                teacher: document.getElementById('courseTeacher').value,
+                credits: Number(document.getElementById('courseCredits').value)
+            });
+            alert("ኮርሱ ተመዝግቧል!");
+            renderTabContent();
         }
 
-        // Printable Transcript Function
-        function printTranscript(studentId) {
+        function addNewTeacher(e) {
+            e.preventDefault();
+            appState.teachers.push({
+                id: `T${Date.now()}`,
+                name: document.getElementById('teacherName').value,
+                subject: document.getElementById('teacherSubject').value,
+                password: document.getElementById('teacherPassword').value
+            });
+            alert("መምህሩ ተመዝግቧል!");
+            renderTabContent();
+        }
+
+        function exportToExcel() {
+            const data = appState.students.filter(s => s.program === appState.activeProgram).map(s => ({
+                "መለያ ኮድ (ID)": s.id, "የተማሪው ስም": s.name, "ጾታ": s.gender, "ፕሮግራም": s.program, "ዓመት": s.year, "ሴሚስተር": s.semester
+            }));
+            const worksheet = XLSX.utils.json_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+            XLSX.writeFile(workbook, `Birbir_Students_${appState.activeProgram}.xlsx`);
+        }
+
+        function importExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet);
+                json.forEach(row => {
+                    appState.students.push({
+                        id: String(row["መለያ ኮድ (ID)"] || Date.now()),
+                        name: row["የተማሪው ስም"] || "ስም የሌለው",
+                        gender: row["ጾታ"] || "ወ",
+                        program: appState.activeProgram,
+                        year: 1,
+                        semester: 1,
+                        grades: {}
+                    });
+                });
+                alert("የExcel ፋይል ተጭኗል!");
+                renderTabContent();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadStudentPdf() {
+            const studentId = document.getElementById('selectedStudentPdf').value;
             const student = appState.students.find(s => s.id === studentId);
-            if (!student) return;
+            if (!student) { alert("እባክዎ ተማሪ ይምረጡ!"); return; }
 
             const printArea = document.getElementById('printableArea');
             printArea.innerHTML = `
-                <div class="text-center space-y-2 border-b-2 border-black pb-4 mb-6">
-                    <h1 class="text-xl font-bold uppercase">የብርብር ቃለ ሕይወት ቤተክርስቲያን የማታ መጽሐፍ ቅዱስ ትምህርት ቤት</h1>
-                    <h2 class="text-md font-semibold">የተማሪ ውጤት መግለጫ (Official Transcript)</h2>
-                </div>
-                <div class="grid grid-cols-2 text-xs mb-6 gap-2">
-                    <p><strong>የተማሪው ሙሉ ስም:</strong> ${student.name}</p>
-                    <p><strong>የተማሪ መለያ ቁጥር:</strong> ${student.id}</p>
-                    <p><strong>የትምህርት ፕሮግራም:</strong> ${student.program.toUpperCase()}</p>
-                    <p><strong>የትምህርት ዘመን:</strong> 2017/2018 ዓ.ም</p>
-                </div>
-                <table class="w-full text-xs border-collapse border border-black mb-6">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border border-black p-2 text-left">ኮርስ</th>
-                            <th class="border border-black p-2 text-center">ክሬዲት</th>
-                            <th class="border border-black p-2 text-center">ውጤት</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${appState.courses.map(c => `
-                            <tr>
-                                <td class="border border-black p-2">${c.title}</td>
-                                <td class="border border-black p-2 text-center">${c.credits}</td>
-                                <td class="border border-black p-2 text-center font-bold">A</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                <div class="flex justify-between items-end mt-12 pt-8 text-xs">
-                    <div>
-                        <p class="border-t border-black pt-1 px-4">የሬጂስትራር ፊርማ</p>
+                <div style="text-align: center; font-family: 'Noto Sans Ethiopic', sans-serif;">
+                    <h2>የብርብር ቃለ ሕይወት ቤተክርስቲያን የማታ መጽሐፍ ቅዱስ ትምህርት ቤት</h2>
+                    <h3>የተማሪ ውጤት መግለጫ (Student Transcript)</h3>
+                    <hr style="margin: 15px 0;">
+                    <div style="text-align: left; margin-bottom: 20px;">
+                        <p><strong>የተማሪው ስም፦</strong> ${student.name}</p>
+                        <p><strong>መለያ ኮድ (ID)፦</strong> ${student.id}</p>
+                        <p><strong>ፕሮግራም፦</strong> ${student.program} (${student.year}ኛ ዓመት)</p>
                     </div>
-                    <div>
-                        <p class="border-t border-black pt-1 px-4">ቀን (Date)</p>
-                    </div>
+                    <table border="1" style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead><tr style="background-color: #f2f2f2;"><th style="padding: 8px;">ኮርስ</th><th style="padding: 8px;">ውጤት (%)</th></tr></thead>
+                        <tbody>
+                            ${Object.entries(student.grades).map(([code, score]) => `<tr><td style="padding: 8px;">${code}</td><td style="padding: 8px;">${score}%</td></tr>`).join('') || '<tr><td colspan="2" style="padding:8px; text-align:center;">ውጤት የለም።</td></tr>'}
+                        </tbody>
+                    </table>
                 </div>
             `;
             window.print();
         }
 
-        // Excel Export Feature
-        function exportToExcel() {
-            const filteredStudents = appState.students.filter(s => s.program === appState.activeProgram);
-            const data = filteredStudents.map(s => ({
-                "ID": s.id,
-                "Full Name": s.name,
-                "Program": s.program.toUpperCase(),
-                "Year": s.year,
-                "Semester": s.semester,
-                "GPA": calculateGPA(s, 1, 1)
-            }));
-
-            const worksheet = XLSX.utils.json_to_sheet(data);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
-            XLSX.writeFile(workbook, `Birbir_Bible_School_${appState.activeProgram}.xlsx`);
-        }
-
-        // Student Actions
-        function addNewStudentPrompt() {
-            const name = prompt("የተማሪውን ሙሉ ስም ያስገቡ (Full Name):");
-            if (!name) return;
-            const newId = `${appState.activeProgram === 'degree' ? 'DEG' : 'DIP'}-2024-${(appState.students.length + 1).toString().padStart(3, '0')}`;
-            
-            const newStudent = {
-                id: newId,
-                name: name,
-                program: appState.activeProgram,
-                year: 1,
-                semester: 1,
-                grades: {}
-            };
-
-            appState.students.push(newStudent);
-            saveState();
-            renderTabContent();
-        }
-
-        function deleteStudent(id) {
-            if (confirm("እርግጠኛ ነዎት ይህን ተማሪ ማጥፋት ይፈልጋሉ?")) {
-                appState.students = appState.students.filter(s => s.id !== id);
-                saveState();
-                renderTabContent();
-            }
-        }
-
-        function viewStudentTranscript(id) {
-            appState.activeTab = 'grades';
-            renderNavigation();
-            renderTabContent();
-            setTimeout(() => {
-                const select = document.getElementById('studentSelect');
-                if (select) {
-                    select.value = id;
-                    renderGradeSheet(id);
-                }
-            }, 50);
-        }
-
-        // Modal Helpers
-        function openChangePasswordModal() {
-            document.getElementById('passwordModal').classList.remove('hidden');
-        }
-
-        function handlePasswordChange(e) {
-            e.preventDefault();
-            alert("የይለፍ ቃልዎ በተሳካ ሁኔታ ተቀይሯል!");
-            closeModal('passwordModal');
-        }
-
-        function toggleFirebaseStatusModal() {
-            const modal = document.getElementById('firebaseModal');
-            const detail = document.getElementById('firebaseStatusDetail');
-            
-            detail.innerHTML = window.firebaseActive ? `
-                <div class="text-emerald-700 font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check"></i> Firebase Firestore ተገናኝቷል።
-                </div>
-                <p class="text-[11px] text-slate-500">ዳታዎ በቅጽበት (Real-time) ከደመናው ጋር ይመሳሰላል።</p>
-            ` : `
-                <div class="text-amber-700 font-bold flex items-center gap-2">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Firebase አልተዋቀረም።
-                </div>
-                <p class="text-[11px] text-slate-600">በአሁኑ ሰዓት ሲስተሙ በLocal Memory እየሰራ ይገኛል። Firebase ለማገናኘት በፋይሉ ውስጥ <code class="bg-slate-200 px-1 rounded">firebaseConfig</code> የሚለውን ይተኩ።</p>
-            `;
-            modal.classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        function updateDBStatusUI() {
-            const statusText = document.getElementById('dbStatusText');
-            if (statusText) {
-                statusText.innerText = window.firebaseActive ? "Firebase Connected" : "Local Mode";
-            }
-        }
-
-        // Initial Load
-        window.onload = () => {
-            renderNavigation();
-            renderTabContent();
-            updateDBStatusUI();
-        };
+        window.onload = initApp;
     </script>
 </body>
 </html>
